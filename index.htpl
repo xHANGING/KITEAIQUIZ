@@ -1,216 +1,557 @@
-<!--
-KITE AI AIRDROP QUIZ - Fixed version
--->
-<!doctype html>
-<html lang="hi">
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Kite AI Airdrop Quiz</title>
-  <style>
-    :root{--bg:#0f1724;--card:#0b1220;--accent:#06b6d4;--muted:#9aa6b2;--success:#10b981}
-    *{box-sizing:border-box}
-    body{font-family:Inter,Segoe UI,system-ui,Arial;background:linear-gradient(180deg,#031226 0%, #071428 100%);color:#e6eef6;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-    .container{width:100%;max-width:900px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:22px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
-    h1{margin:0 0 8px;font-size:22px}
-    p.lead{margin:0 0 18px;color:var(--muted)}
-    .grid{display:grid;grid-template-columns:320px 1fr;gap:18px}
-    form.card{background:var(--card);padding:14px;border-radius:10px}
-    label{display:block;font-size:13px;margin-bottom:6px;color:var(--muted)}
-    input[type=text],input[type=email],input[type=tel]{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
-    button{background:var(--accent);border:0;padding:10px 12px;border-radius:8px;color:#032;cursor:pointer;font-weight:600}
-    .quiz{background:var(--card);padding:18px;border-radius:10px}
-    .question{font-size:18px;margin-bottom:12px}
-    .choices{display:flex;flex-direction:column;gap:10px}
-    .choice{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);cursor:pointer}
-    .choice.selected{outline:2px solid rgba(6,182,212,0.2);background:linear-gradient(90deg, rgba(6,182,212,0.06), rgba(255,255,255,0.01))}
-    .footer{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
-    .small{font-size:13px;color:var(--muted)}
-    .progress{height:8px;background:rgba(255,255,255,0.03);border-radius:999px;overflow:hidden}
-    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#7dd3fc);width:0%}
-    .result{padding:14px;border-radius:8px;background:linear-gradient(180deg, rgba(16,185,129,0.06), rgba(255,255,255,0.01));color:var(--muted)}
-    .actions{display:flex;gap:8px}
-    .danger{background:#ef4444;color:#fff}
-    .note{font-size:12px;color:var(--muted);margin-top:8px}
-    @media (max-width:880px){.grid{grid-template-columns:1fr}}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizMaster - Test Your Knowledge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .quiz-section {
+            display: none;
+        }
+
+        .quiz-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-counter {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border-left: 5px solid #667eea;
+        }
+
+        .question h3 {
+            color: #333;
+            font-size: 1.3rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        }
+
+        .option.correct {
+            border-color: #4CAF50;
+            background: linear-gradient(45deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.2));
+            animation: correctPulse 0.6s ease;
+        }
+
+        .option.incorrect {
+            border-color: #f44336;
+            background: linear-gradient(45deg, rgba(244, 67, 54, 0.1), rgba(244, 67, 54, 0.2));
+            animation: incorrectShake 0.6s ease;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .feedback {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+            border: 2px solid #4CAF50;
+        }
+
+        .feedback.incorrect {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+            border: 2px solid #f44336;
+        }
+
+        .buttons {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .start-screen {
+            text-align: center;
+        }
+
+        .start-screen h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .start-screen p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .results-screen {
+            text-align: center;
+        }
+
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 30px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .score-circle.excellent {
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+        }
+
+        .score-circle.good {
+            background: linear-gradient(45deg, #FF9800, #FFC107);
+        }
+
+        .score-circle.average {
+            background: linear-gradient(45deg, #2196F3, #03A9F4);
+        }
+
+        .score-circle.poor {
+            background: linear-gradient(45deg, #f44336, #FF5722);
+        }
+
+        .score-text {
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .results-message {
+            color: #333;
+            font-size: 1.3rem;
+            margin: 20px 0;
+        }
+
+        .results-breakdown {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+
+        .breakdown-item strong {
+            color: #333;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .option {
+                padding: 12px 15px;
+            }
+            
+            .score-circle {
+                width: 150px;
+                height: 150px;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Kite AI — Airdrop Quiz</h1>
-    <p class="lead">Quiz complete karne pe airdrop eligibility ke liye participants capture karo. Neeche details bharo aur quiz shuru karo.</p>
-
-    <div class="grid">
-      <form id="participantForm" class="card" onsubmit="return false;">
-        <label for="name">Naam</label>
-        <input id="name" required placeholder="Apna full name" />
-        <label for="email">Email</label>
-        <input id="email" type="email" required placeholder="example@mail.com" />
-        <label for="wallet">Wallet Address</label>
-        <input id="wallet" required placeholder="0x... ya your wallet" />
-        <div style="margin-top:12px;display:flex;gap:8px">
-          <button id="startBtn">Quiz Start Karo</button>
-          <button id="exportBtn" type="button">Export CSV</button>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🧠 QuizMaster</div>
+            <div class="subtitle">Test Your Knowledge</div>
         </div>
-        <div class="note">Note: Data local machine par store hota hai. Server chahiye ho to batao.</div>
-      </form>
 
-      <div class="quiz" id="quizBox">
-        <div class="progress" aria-hidden><i id="progressBar"></i></div>
-        <div id="quizContent" style="margin-top:14px">
-          <div class="small">Quiz suru nahi hua. Participant info bhar kar "Quiz Start Karo" dabao.</div>
+        <!-- Start Screen -->
+        <div id="start-screen" class="quiz-section active start-screen">
+            <h2>Welcome to QuizMaster!</h2>
+            <p>Test your knowledge with our interactive quiz. You'll get immediate feedback on each question and see your final score at the end.</p>
+            <div class="buttons">
+                <button class="btn" onclick="startQuiz()">Start Quiz</button>
+            </div>
         </div>
-      </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="quiz-section">
+            <div class="question-counter">
+                <span id="current-question">1</span> of <span id="total-questions">10</span>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+
+            <div class="question">
+                <h3 id="question-text"></h3>
+                <div class="options" id="options-container">
+                </div>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <div class="buttons">
+                <button class="btn" id="next-btn" onclick="nextQuestion()" disabled>Next Question</button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="quiz-section results-screen">
+            <h2>Quiz Complete!</h2>
+            
+            <div class="score-circle" id="score-circle">
+                <div id="score-percentage">0%</div>
+                <div class="score-text">Score</div>
+            </div>
+
+            <div class="results-message" id="results-message"></div>
+
+            <div class="results-breakdown">
+                <div class="breakdown-item">
+                    <span>Correct Answers:</span>
+                    <strong id="correct-count">0</strong>
+                </div>
+                <div class="breakdown-item">
+                    <span>Incorrect Answers:</span>
+                    <strong id="incorrect-count">0</strong>
+                </div>
+                <div class="breakdown-item">
+                    <span>Total Questions:</span>
+                    <strong id="total-count">0</strong>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button class="btn" onclick="restartQuiz()">Take Quiz Again</button>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <script>
-    // ================== CONFIG ==================
-    const MIN_PERCENT_TO_WIN = 70; // 70% needed to be eligible
-    const TOO_FAST_SECONDS = 6; // agar ek question 6s se kam mein solve hua to suspicious
+    <script>
+        // Quiz data
+        const quizData = [
+            {
+                question: "What is the capital of India?",
+                options: ["Mumbai", "New Delhi", "Kolkata", "Chennai"],
+                correct: 1
+            },
+            {
+                question: "Which planet is known as the Red Planet?",
+                options: ["Venus", "Mars", "Jupiter", "Saturn"],
+                correct: 1
+            },
+            {
+                question: "What is the largest mammal in the world?",
+                options: ["Elephant", "Blue Whale", "Giraffe", "Hippopotamus"],
+                correct: 1
+            },
+            {
+                question: "Who painted the Mona Lisa?",
+                options: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Michelangelo"],
+                correct: 2
+            },
+            {
+                question: "What is the chemical symbol for gold?",
+                options: ["Go", "Gd", "Au", "Ag"],
+                correct: 2
+            },
+            {
+                question: "Which is the smallest country in the world?",
+                options: ["Monaco", "Vatican City", "San Marino", "Liechtenstein"],
+                correct: 1
+            },
+            {
+                question: "What is the fastest land animal?",
+                options: ["Lion", "Cheetah", "Leopard", "Tiger"],
+                correct: 1
+            },
+            {
+                question: "Which ocean is the largest?",
+                options: ["Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Pacific Ocean"],
+                correct: 3
+            },
+            {
+                question: "What is the hardest natural substance on Earth?",
+                options: ["Gold", "Iron", "Diamond", "Platinum"],
+                correct: 2
+            },
+            {
+                question: "How many continents are there?",
+                options: ["5", "6", "7", "8"],
+                correct: 2
+            }
+        ];
 
-    // Example questions - change as needed. Each item: {q, choices:[], a: index}
-    const questions = [
-      { q: "Kite AI ka primary purpose kya hai?",
-        choices: ["Image generation","Decentralized search","AI-assisted trading signals","Natural language model"],
-        a: 3 },
-      { q: "Airdrop eligibility ke liye minimum score kitna hona chahiye?",
-        choices: ["50%","60%","70%","80%"], a: 2 },
-      { q: "Quiz ka correct answer kaise evaluate hota hai?",
-        choices: ["User claim pe","Automatic check","Manual review only","Random selection"], a: 1 }
-    ];
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedOption = -1;
+        let quizCompleted = false;
 
-    // ================ App state ==================
-    let state = { participant: null, idx:0, answers: [], startTime: null, questionStart: null };
+        function startQuiz() {
+            document.getElementById('start-screen').classList.remove('active');
+            document.getElementById('quiz-screen').classList.add('active');
+            document.getElementById('total-questions').textContent = quizData.length;
+            loadQuestion();
+        }
 
-    // ================ DOM refs ==================
-    const quizContent = document.getElementById('quizContent');
-    const progressBar = document.getElementById('progressBar');
-    const startBtn = document.getElementById('startBtn');
-    const exportBtn = document.getElementById('exportBtn');
+        function loadQuestion() {
+            if (currentQuestion >= quizData.length) {
+                showResults();
+                return;
+            }
 
-    startBtn.addEventListener('click', ()=>{
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const wallet = document.getElementById('wallet').value.trim();
-      if(!name || !email || !wallet){ alert('Sab fields bhar do.'); return; }
-      state.participant = {name,email,wallet,startedAt: (new Date()).toISOString()};
-      state.idx = 0; state.answers = []; state.startTime = Date.now();
-      renderQuestion();
-    });
+            const question = quizData[currentQuestion];
+            document.getElementById('current-question').textContent = currentQuestion + 1;
+            document.getElementById('question-text').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = option;
+                optionElement.onclick = () => selectOption(index);
+                optionsContainer.appendChild(optionElement);
+            });
 
-    exportBtn.addEventListener('click', ()=>{
-      const list = loadParticipants();
-      if(!list.length){ alert('Koi participant data nahi mila.'); return; }
-      const csv = toCSV(list);
-      downloadBlob(csv, 'kiteai-participants.csv');
-    });
+            // Update progress bar
+            const progress = ((currentQuestion) / quizData.length) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
 
-    // ================ Render ==================
-    function renderQuestion(){
-      const i = state.idx;
-      if(i >= questions.length){ showResult(); return; }
-      const q = questions[i];
-      progressBar.style.width = ((i)/questions.length*100)+'%';
-      quizContent.innerHTML = `
-        <div class="question">Q${i+1}. ${escapeHtml(q.q)}</div>
-        <div class="choices">${q.choices.map((c,ci)=>`<div class="choice" data-ci="${ci}">${escapeHtml(c)}</div>`).join('')}</div>
-        <div class="footer">
-          <div class="small">Question ${i+1} of ${questions.length}</div>
-          <div class="actions"><button id="nextBtn" class="danger" disabled>Next</button></div>
-        </div>
-      `;
-      state.questionStart = Date.now();
-      attachChoiceHandlers();
-    }
+            // Reset UI
+            selectedOption = -1;
+            document.getElementById('next-btn').disabled = true;
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('feedback').className = 'feedback';
+        }
 
-    function attachChoiceHandlers(){
-      const choiceEls = Array.from(document.querySelectorAll('.choice'));
-      const nextBtn = document.getElementById('nextBtn');
-      let selected = null;
-      choiceEls.forEach(el => el.addEventListener('click', ()=>{
-        choiceEls.forEach(x=>x.classList.remove('selected'));
-        el.classList.add('selected');
-        selected = parseInt(el.dataset.ci,10);
-        nextBtn.disabled = false;
-      }));
-      nextBtn.addEventListener('click', ()=>{
-        const timeTaken = (Date.now() - state.questionStart)/1000;
-        const flaggedFast = timeTaken < TOO_FAST_SECONDS;
-        state.answers.push({qIndex: state.idx, picked: selected, timeTaken, flaggedFast});
-        state.idx++;
-        renderQuestion();
-      });
-    }
+        function selectOption(index) {
+            if (selectedOption !== -1) return; // Prevent multiple selections
 
-    function showResult(){
-      progressBar.style.width = '100%';
-      const correct = state.answers.reduce((acc,ans)=> acc + (questions[ans.qIndex].a === ans.picked ? 1:0), 0);
-      const percent = Math.round((correct / questions.length)*100);
-      const eligible = percent >= MIN_PERCENT_TO_WIN;
+            selectedOption = index;
+            const options = document.querySelectorAll('.option');
+            const question = quizData[currentQuestion];
+            
+            // Show correct/incorrect feedback
+            options.forEach((option, i) => {
+                if (i === question.correct) {
+                    option.classList.add('correct');
+                } else if (i === selectedOption && i !== question.correct) {
+                    option.classList.add('incorrect');
+                }
+                option.style.pointerEvents = 'none';
+            });
 
-      const suspicious = state.answers.some(a=>a.flaggedFast);
+            // Update score and show feedback
+            const feedback = document.getElementById('feedback');
+            if (selectedOption === question.correct) {
+                score++;
+                feedback.textContent = '🎉 Correct! Well done!';
+                feedback.className = 'feedback correct';
+            } else {
+                feedback.textContent = `❌ Incorrect. The correct answer is: ${question.options[question.correct]}`;
+                feedback.className = 'feedback incorrect';
+            }
+            
+            feedback.style.display = 'block';
+            document.getElementById('next-btn').disabled = false;
+        }
 
-      const resultHtml = `
-        <div class="result">
-          <div style="font-weight:700;font-size:18px">Score: ${correct} / ${questions.length} — ${percent}%</div>
-          <div class="small" style="margin-top:6px">Eligibility: <strong>${eligible? 'Eligible':'Not eligible'}</strong></div>
-          <div class="small">Suspicious behaviour: <strong>${suspicious? 'Yes (too-fast answers)':'No'}</strong></div>
-          <div style="margin-top:10px;display:flex;gap:8px">
-            <button id="saveBtn">Save Participant</button>
-            <button id="retakeBtn" class="danger">Retake Quiz</button>
-          </div>
-        </div>
-      `;
+        function nextQuestion() {
+            currentQuestion++;
+            setTimeout(loadQuestion, 300); // Small delay for smooth transition
+        }
 
-      quizContent.innerHTML = resultHtml;
-      document.getElementById('saveBtn').addEventListener('click', ()=>saveParticipant(correct,percent,eligible,suspicious));
-      document.getElementById('retakeBtn').addEventListener('click', ()=>{
-        state.idx = 0; state.answers = []; state.participant.startedAt = (new Date()).toISOString(); renderQuestion();
-      });
-    }
+        function showResults() {
+            document.getElementById('quiz-screen').classList.remove('active');
+            document.getElementById('results-screen').classList.add('active');
+            
+            const percentage = Math.round((score / quizData.length) * 100);
+            const scoreCircle = document.getElementById('score-circle');
+            
+            document.getElementById('score-percentage').textContent = percentage + '%';
+            document.getElementById('correct-count').textContent = score;
+            document.getElementById('incorrect-count').textContent = quizData.length - score;
+            document.getElementById('total-count').textContent = quizData.length;
+            
+            // Set score circle color and message based on performance
+            let message = '';
+            if (percentage >= 80) {
+                scoreCircle.className = 'score-circle excellent';
+                message = '🏆 Excellent! You\'re a quiz master!';
+            } else if (percentage >= 60) {
+                scoreCircle.className = 'score-circle good';
+                message = '👏 Good job! You did well!';
+            } else if (percentage >= 40) {
+                scoreCircle.className = 'score-circle average';
+                message = '👍 Not bad! Keep practicing!';
+            } else {
+                scoreCircle.className = 'score-circle poor';
+                message = '💪 Don\'t give up! Try again!';
+            }
+            
+            document.getElementById('results-message').textContent = message;
+        }
 
-    // =============== Storage & CSV ==================
-    function saveParticipant(score,percent,eligible,suspicious){
-      const data = loadParticipants();
-      const entry = {
-        id: 'p_'+Date.now(),
-        name: state.participant.name,
-        email: state.participant.email,
-        wallet: state.participant.wallet,
-        score, percent, eligible, suspicious,
-        answers: JSON.stringify(state.answers),
-        startedAt: state.participant.startedAt,
-        finishedAt: (new Date()).toISOString()
-      };
-      data.push(entry);
-      localStorage.setItem('kiteai_participants', JSON.stringify(data));
-      alert('Participant saved locally. Export CSV se download kar lo.');
-    }
-
-    function loadParticipants(){
-      try{ const raw = localStorage.getItem('kiteai_participants'); return raw? JSON.parse(raw):[] }catch(e){return []}
-    }
-
-    function toCSV(arr){
-      const keys = ['id','name','email','wallet','score','percent','eligible','suspicious','startedAt','finishedAt','answers'];
-      const lines = [keys.join(',')];
-      arr.forEach(r=>{
-        const row = keys.map(k=>`"${(r[k]||'').toString().replace(/"/g,'""')}"`).join(',');
-        lines.push(row);
-      });
-      return lines.join('\n');
-    }
-
-    function downloadBlob(text, filename){
-      const blob = new Blob([text], {type:'text/csv;charset=utf-8;'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-    }
-
-    // ============= Utilities ==================
-    function escapeHtml(s){ return String(s).replace(/[&<>\"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]||c)); }
-
-  </script>
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            selectedOption = -1;
+            document.getElementById('results-screen').classList.remove('active');
+            document.getElementById('start-screen').classList.add('active');
+        }
+    </script>
 </body>
 </html>
