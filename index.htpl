@@ -81,5 +81,3 @@ choices: ["50%","60%","70%","80%"], a: 2 },
 choices: ["User claim pe","Automatic check","Manual review only","Random selection"], a: 1 }
 ];
 
-
-// ================ App state ==================
